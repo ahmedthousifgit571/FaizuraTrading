@@ -18,6 +18,9 @@ const FALLBACK_RATES: RatesResponse = {
   },
 };
 
+/** Frankfurter moved off api.frankfurter.app (301) to api.frankfurter.dev v1. */
+const FRANKFURTER_LATEST = "https://api.frankfurter.dev/v1/latest";
+
 export function useExchangeRates(base: CurrencyCode = "USD") {
   const [data, setData] = useState<RatesResponse | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -28,12 +31,14 @@ export function useExchangeRates(base: CurrencyCode = "USD") {
     async function load() {
       setLoading(true);
       try {
-        const res = await fetch(
-          `https://api.frankfurter.app/latest?from=${base}`,
-          { cache: "no-store" }
-        );
+        const url = `${FRANKFURTER_LATEST}?from=${encodeURIComponent(base)}`;
+        const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error(`Rates API ${res.status}`);
-        const j = (await res.json()) as { base: CurrencyCode; rates: Partial<Record<CurrencyCode, number>>; date: string };
+        const j = (await res.json()) as {
+          base: CurrencyCode;
+          rates: Partial<Record<CurrencyCode, number>>;
+          date: string;
+        };
         if (!cancelled) {
           setData({ base: j.base, rates: { ...j.rates, [base]: 1 }, date: j.date });
           setError(null);

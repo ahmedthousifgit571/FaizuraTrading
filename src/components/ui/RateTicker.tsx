@@ -6,6 +6,9 @@ import type { CurrencyCode } from "@/types";
 
 type Tick = { code: CurrencyCode; rate: number; delta: number };
 
+const TICKER_LOOP_DURATION_SECONDS = 6;
+const DRIFT_INTERVAL_MS = 1400;
+
 const SEED: Tick[] = [
   { code: "USD", rate: 1.3502, delta: 0.0023 },
   { code: "EUR", rate: 1.4612, delta: -0.0011 },
@@ -28,10 +31,14 @@ export default function RateTicker({ className }: { className?: string }) {
       setTicks((prev) =>
         prev.map((t) => {
           const drift = (Math.random() - 0.5) * 0.0008;
-          return { ...t, rate: +(t.rate + drift).toFixed(4), delta: +drift.toFixed(4) };
+          return {
+            ...t,
+            rate: +(t.rate + drift).toFixed(4),
+            delta: +drift.toFixed(4),
+          };
         })
       );
-    }, 3500);
+    }, DRIFT_INTERVAL_MS);
     return () => window.clearInterval(id);
   }, []);
 
@@ -41,30 +48,43 @@ export default function RateTicker({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden border-y border-border bg-surface",
-        "[mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]",
+        "group relative w-full overflow-hidden border-y border-white/[0.06] bg-white/[0.03]",
+        "[mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]",
         className
       )}
       aria-label="Live exchange rates ticker"
     >
-      <div className="flex gap-12 py-4 animate-[ticker_60s_linear_infinite] whitespace-nowrap">
-        {items.map((t, i) => (
-          <span
-            key={i}
-            className="inline-flex items-center gap-2 text-sm tabular text-primary/90"
-          >
-            <span className="text-muted">SGD/{t.code}</span>
-            <span className="font-medium">{formatRate(t.rate)}</span>
+      <div
+        className="flex whitespace-nowrap group-hover:[animation-play-state:paused]"
+        style={{
+          animation: `ticker ${TICKER_LOOP_DURATION_SECONDS}s linear infinite`,
+        }}
+      >
+        {items.map((t, i) => {
+          const positive = t.delta >= 0;
+          return (
             <span
-              className={cn(
-                "text-xs tabular",
-                t.delta >= 0 ? "text-positive" : "text-negative"
-              )}
+              key={i}
+              className="inline-flex shrink-0 items-center gap-3 border-r border-white/[0.15] px-8 py-3.5"
             >
-              {t.delta >= 0 ? "▲" : "▼"} {Math.abs(t.delta).toFixed(4)}
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
+                SGD/{t.code}
+              </span>
+              <span className="font-mono text-[14px] font-bold tabular-nums text-white">
+                {formatRate(t.rate)}
+              </span>
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 font-mono text-[12px] font-medium tabular-nums",
+                  positive ? "text-[#00C896]" : "text-[#FF5C5C]"
+                )}
+              >
+                <span aria-hidden>{positive ? "▲" : "▼"}</span>
+                {Math.abs(t.delta).toFixed(4)}
+              </span>
             </span>
-          </span>
-        ))}
+          );
+        })}
       </div>
       <style>{`
         @keyframes ticker {

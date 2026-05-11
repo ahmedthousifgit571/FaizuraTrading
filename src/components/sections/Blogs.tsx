@@ -64,7 +64,7 @@ export default function Blogs() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <article className="lg:col-span-2 rounded-2xl border border-border bg-surface p-8 md:p-10 hover:translate-y-[-2px] hover:border-primary/30 transition-all duration-300 cursor-pointer">
+          <article className="lg:col-span-2 rounded-2xl border border-border bg-surface p-5 sm:p-7 md:p-10 hover:translate-y-[-2px] hover:border-primary/30 transition-all duration-300 cursor-pointer">
             <span className="text-[11px] uppercase tracking-[0.18em] text-accent tabular">
               {featured.category}
             </span>

@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion, type Variants } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
+import type { CurrencyCode } from "@/types";
 
 const HEADLINE_LINES: ReadonlyArray<{ words: ReadonlyArray<string>; accentIndex?: number }> = [
   { words: ["Move", "money"] },
@@ -27,17 +29,39 @@ const TRUST_METRICS: ReadonlyArray<TrustMetric> = [
   { target: 2008, label: "Operating since" },
 ];
 
-const FX_PAIRS: ReadonlyArray<{ pair: string; rate: string; delta: string; positive: boolean }> = [
-  { pair: "USD / SGD", rate: "1.3287", delta: "+0.42%", positive: true },
-  { pair: "GBP / SGD", rate: "1.6841", delta: "−0.18%", positive: false },
-  { pair: "INR / SGD", rate: "0.0159", delta: "+0.07%", positive: true },
-  { pair: "MYR / SGD", rate: "0.2843", delta: "+0.21%", positive: true },
-];
-
 const EASE = [0.22, 1, 0.36, 1] as const;
+const HERO_BASE = "SGD" as const;
+
+const HERO_RATE_META: ReadonlyArray<{
+  code: CurrencyCode;
+  fallbackRate: string;
+  delta: string;
+  positive: boolean;
+}> = [
+  { code: "USD", fallbackRate: "1.3287", delta: "+0.42%", positive: true },
+  { code: "GBP", fallbackRate: "1.6841", delta: "−0.18%", positive: false },
+  { code: "INR", fallbackRate: "0.0159", delta: "+0.07%", positive: true },
+  { code: "MYR", fallbackRate: "0.2843", delta: "+0.21%", positive: true },
+];
 
 export default function Hero() {
   const reduce = useReducedMotion();
+  const { data } = useExchangeRates(HERO_BASE);
+
+  const panelRows = useMemo(() => {
+    return HERO_RATE_META.map(({ code, fallbackRate, delta, positive }) => {
+      const inverse = data?.rates[code];
+      const sgdPerUnit = typeof inverse === "number" && inverse > 0 ? 1 / inverse : null;
+      return {
+        pair: `${code} / SGD`,
+        rate: sgdPerUnit ? sgdPerUnit.toFixed(4) : fallbackRate,
+        delta,
+        positive,
+      };
+    });
+  }, [data]);
+
+  const heroUsdRate = panelRows[0]?.rate ?? HERO_RATE_META[0].fallbackRate;
 
   const buildLineVariants = (lineIndex: number): Variants => ({
     hidden: {},
@@ -155,7 +179,7 @@ export default function Hero() {
           </div>
 
           <div className="lg:col-span-5 flex items-start">
-            <MarketPanel reduce={!!reduce} />
+            <MarketPanel reduce={!!reduce} rows={panelRows} usdRate={heroUsdRate} />
           </div>
         </div>
 
@@ -229,7 +253,15 @@ function GhostMarquee() {
   );
 }
 
-function MarketPanel({ reduce }: { reduce: boolean }) {
+function MarketPanel({
+  reduce,
+  rows,
+  usdRate,
+}: {
+  reduce: boolean;
+  rows: ReadonlyArray<{ pair: string; rate: string; delta: string; positive: boolean }>;
+  usdRate: string;
+}) {
   const points: ReadonlyArray<[number, number]> = [
     [0, 78], [12, 72], [22, 80], [32, 68], [44, 74],
     [56, 60], [68, 64], [78, 48], [88, 52], [100, 38],
@@ -245,7 +277,7 @@ function MarketPanel({ reduce }: { reduce: boolean }) {
       className="relative w-full"
     >
       <div className="rounded-[28px] border border-white/[0.08] bg-white/[0.02] p-1.5 shadow-[0_30px_80px_-30px_rgba(45,91,255,0.4)] backdrop-blur-[2px]">
-        <div className="rounded-[22px] border border-white/[0.06] bg-[#0d0d10] p-6 md:p-7">
+        <div className="rounded-[22px] border border-white/[0.06] bg-[#0d0d10] p-4 sm:p-5 md:p-7">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
@@ -261,7 +293,7 @@ function MarketPanel({ reduce }: { reduce: boolean }) {
             </div>
             <div className="text-right">
               <div className="font-mono text-[28px] font-medium leading-none tabular-nums text-white">
-                1.3287
+                {usdRate}
               </div>
               <div className="mt-1 font-mono text-[11px] tabular-nums text-[#00C896]">
                 +0.42% · 24h
@@ -311,7 +343,7 @@ function MarketPanel({ reduce }: { reduce: boolean }) {
           </div>
 
           <div className="mt-6 divide-y divide-white/[0.06]">
-            {FX_PAIRS.map((p, i) => (
+            {rows.map((p, i) => (
               <motion.div
                 key={p.pair}
                 initial={{ opacity: 0, x: -8 }}

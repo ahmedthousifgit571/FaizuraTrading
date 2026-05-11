@@ -49,11 +49,11 @@ export default function About() {
 
         <dl className="grid grid-cols-2 gap-px self-start bg-border rounded-2xl overflow-hidden border border-border">
           {STATS.map((s) => (
-            <div key={s.label} className="bg-surface p-7 md:p-9">
+            <div key={s.label} className="bg-surface p-4 sm:p-6 md:p-7 lg:p-9">
               <dt className="text-xs uppercase tracking-[0.18em] text-muted">
                 {s.label}
               </dt>
-              <dd className="mt-3 font-display text-display-md text-primary tabular">
+              <dd className="mt-2 font-display text-xl sm:text-2xl md:text-display-md text-primary tabular">
                 {s.value}
               </dd>
             </div>

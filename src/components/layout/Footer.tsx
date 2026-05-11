@@ -34,7 +34,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-border bg-bg text-primary">
       <div className="mx-auto max-w-7xl px-5 md:px-8 pt-20 pb-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
           <div className="col-span-2 md:col-span-1">
             <Link href="#" className="flex items-center gap-2 font-semibold">
               <span aria-hidden className="inline-block h-2.5 w-2.5 rounded-full bg-accent" />

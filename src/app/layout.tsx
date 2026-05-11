@@ -110,7 +110,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en-SG" className={`${sans.variable} ${display.variable} ${mono.variable}`}>
       <head>
         <link rel="preload" as="image" href="/frames/frame_001.webp" type="image/webp" />
-        <link rel="preconnect" href="https://api.frankfurter.app" />
+        <link rel="preconnect" href="https://api.frankfurter.dev" />
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger

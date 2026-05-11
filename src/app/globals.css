@@ -51,7 +51,10 @@ body {
 }
 
 body {
-  /* Lock horizontal scroll — important for Lenis on touch devices */
+  /* Lock horizontal scroll — important for Lenis on touch devices.
+     Note: do NOT add overflow-x to <html> — it makes html a scroll
+     container and breaks position: sticky / GSAP ScrollTrigger used
+     by the StoryScroll frame scrubber. */
   overflow-x: hidden;
 }
 
