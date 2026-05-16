@@ -1,57 +1,18 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useGSAP, gsap } from "@/hooks/useGSAP";
-
-type Post = {
-  category: string;
-  title: string;
-  excerpt: string;
-  readTime: number;
-  date: string;
-  featured?: true;
-};
-
-const POSTS: Post[] = [
-  {
-    category: "Rate Analysis",
-    title: "USD to SGD this week — what's actually moving the rate?",
-    excerpt:
-      "We break down the Fed's latest signal and what it means for the dollar over the next two weeks.",
-    readTime: 5,
-    date: "May 7, 2026",
-    featured: true,
-  },
-  {
-    category: "Travel",
-    title: "Changi Airport money changers vs us — the real spread, in numbers.",
-    excerpt: "We did the math across 8 currencies. The result will not surprise frequent flyers.",
-    readTime: 4,
-    date: "May 4, 2026",
-  },
-  {
-    category: "Remittance",
-    title: "Sending money to Chennai: 5 things every sender should check.",
-    excerpt: "Beyond the rate — fees, IFSC codes, settlement times, and what 'instant' really means.",
-    readTime: 6,
-    date: "Apr 28, 2026",
-  },
-  {
-    category: "Compliance",
-    title: "MAS-licensed: what it actually means for your money.",
-    excerpt: "A plain-English guide to Singapore's Payment Services Act and why the badge matters.",
-    readTime: 7,
-    date: "Apr 22, 2026",
-  },
-];
+import { ARTICLES, type Article } from "@/lib/articles";
 
 const CAT_COLORS: Record<string, string> = {
-  "Rate Analysis": "#2D5BFF",
-  Travel:          "#F5A623",
-  Remittance:      "#22c55e",
-  Compliance:      "#8b5cf6",
+  "RATE ANALYSIS": "#2D5BFF",
+  TRAVEL:         "#F5A623",
+  REMITTANCE:     "#22c55e",
+  COMPLIANCE:     "#8b5cf6",
+  GUIDE:          "#06b6d4",
 };
 
 const BLOGS_CSS = `
@@ -92,6 +53,9 @@ function badgeStyle(cat: string, small?: boolean): React.CSSProperties {
   };
 }
 
+const featured: Article  = ARTICLES.find((a) => a.featured)!;
+const sidebar: Article[] = ARTICLES.filter((a) => !a.featured).slice(0, 3);
+
 export default function Blogs() {
   const sectionRef       = useRef<HTMLElement>(null);
   const eyebrowRef       = useRef<HTMLDivElement>(null);
@@ -99,7 +63,7 @@ export default function Blogs() {
   const line2Ref         = useRef<HTMLSpanElement>(null);
   const subtextRef       = useRef<HTMLParagraphElement>(null);
   const dividerRef       = useRef<HTMLDivElement>(null);
-  const featuredRef      = useRef<HTMLElement>(null);
+  const featuredRef      = useRef<HTMLDivElement>(null);
   const featuredBadgeRef = useRef<HTMLSpanElement>(null);
   const sidebarColRef    = useRef<HTMLDivElement>(null);
   const sidebarRowRefs   = useRef<(HTMLElement | null)[]>([]);
@@ -108,13 +72,11 @@ export default function Blogs() {
   const hCardRefs        = useRef<(HTMLElement | null)[]>([]);
   const hBadgeRefs       = useRef<(HTMLSpanElement | null)[]>([]);
 
-  const isDragging    = useRef(false);
-  const dragStartX    = useRef(0);
+  const isDragging     = useRef(false);
+  const dragStartX     = useRef(0);
   const dragScrollLeft = useRef(0);
 
-  const reduce  = useReducedMotion();
-  const featured = POSTS.find((p) => p.featured)!;
-  const rest     = POSTS.filter((p) => !p.featured);
+  const reduce = useReducedMotion();
 
   useGSAP(
     () => {
@@ -231,7 +193,7 @@ export default function Blogs() {
     >
       <style>{BLOGS_CSS}</style>
 
-      {/* ── Radial bloom ── */}
+      {/* Radial bloom */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div
           className="absolute -top-[20%] -right-[10%] h-[55vmax] w-[55vmax] rounded-full"
@@ -251,7 +213,7 @@ export default function Blogs() {
         />
       </div>
 
-      {/* ── Grid layer ── */}
+      {/* Grid layer */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04]"
@@ -266,7 +228,7 @@ export default function Blogs() {
         }}
       />
 
-      {/* ── Ghost watermark ── */}
+      {/* Ghost watermark */}
       <div
         aria-hidden
         className="pointer-events-none select-none absolute inset-0 -z-10 flex items-center justify-center overflow-hidden"
@@ -284,14 +246,13 @@ export default function Blogs() {
         </span>
       </div>
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div className="relative z-10 mx-auto max-w-[1440px] px-5 md:px-10">
 
         {/* Section header */}
         <header className="mb-16 md:mb-20">
           <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
 
-            {/* Left */}
             <div>
               <div
                 ref={eyebrowRef}
@@ -325,10 +286,9 @@ export default function Blogs() {
               </p>
             </div>
 
-            {/* Right — "Read All Insights" link */}
             <div className="md:pb-1 md:shrink-0">
-              <a
-                href="/insights"
+              <Link
+                href="/#blogs"
                 className="group inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.14em] text-[#2D5BFF] transition-opacity duration-300 hover:opacity-60"
               >
                 Read All Insights
@@ -337,7 +297,7 @@ export default function Blogs() {
                   strokeWidth={1.75}
                   className="transition-transform duration-300 group-hover:translate-x-1"
                 />
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -348,11 +308,11 @@ export default function Blogs() {
           />
         </header>
 
-        {/* ── Main editorial grid ── */}
+        {/* Main editorial grid */}
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
 
-          {/* FEATURED ARTICLE (7/12) — open layout, no card box */}
-          <article
+          {/* FEATURED ARTICLE (7/12) */}
+          <div
             ref={featuredRef}
             className="blogs-featured-article group cursor-pointer will-change-transform lg:col-span-7 lg:pr-10"
             style={{
@@ -360,119 +320,116 @@ export default function Blogs() {
               borderBottom: "1px solid rgba(255,255,255,0.06)",
             }}
           >
-            {/* Category badge */}
-            <span
-              ref={featuredBadgeRef}
-              className="will-change-transform"
-              style={badgeStyle(featured.category)}
-            >
-              {featured.category}
-            </span>
-
-            {/* Headline */}
-            <h3
-              className="blogs-featured-title mt-6 font-display font-bold text-white"
-              style={{
-                fontSize: "clamp(28px, 3.2vw, 50px)",
-                lineHeight: 1.2,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {featured.title}
-            </h3>
-
-            {/* Excerpt */}
-            <p
-              className="mt-5 text-white/60"
-              style={{ fontSize: "16px", lineHeight: 1.7, maxWidth: "55ch" }}
-            >
-              {featured.excerpt}
-            </p>
-
-            {/* Meta */}
-            <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.15em] text-white/35">
-              {featured.readTime} min read · {featured.date}
-            </p>
-
-            {/* CTA — slides up on article hover */}
-            <div className="mt-5">
-              <a
-                href="/insights"
-                className="blogs-featured-cta inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.14em] text-[#2D5BFF]"
+            <Link href={`/insights/${featured.slug}`} className="block">
+              <span
+                ref={featuredBadgeRef}
+                className="will-change-transform"
+                style={badgeStyle(featured.category)}
               >
-                Read Article
-                <ArrowRight size={12} strokeWidth={1.75} />
-              </a>
-            </div>
-          </article>
+                {featured.category}
+              </span>
 
-          {/* SIDEBAR ROWS (5/12) — open rows, no card boxes */}
+              <h3
+                className="blogs-featured-title mt-6 font-display font-bold text-white"
+                style={{
+                  fontSize: "clamp(28px, 3.2vw, 50px)",
+                  lineHeight: 1.2,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {featured.title}
+              </h3>
+
+              <p
+                className="mt-5 text-white/60"
+                style={{ fontSize: "16px", lineHeight: 1.7, maxWidth: "55ch" }}
+              >
+                {featured.excerpt}
+              </p>
+
+              <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.15em] text-white/35">
+                {featured.readTime} · {featured.date}
+              </p>
+
+              <div className="mt-5">
+                <span
+                  className="blogs-featured-cta inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.14em] text-[#2D5BFF]"
+                >
+                  Read Article
+                  <ArrowRight size={12} strokeWidth={1.75} />
+                </span>
+              </div>
+            </Link>
+          </div>
+
+          {/* SIDEBAR ROWS (5/12) */}
           <div
             ref={sidebarColRef}
             className="lg:col-span-5"
           >
-            {rest.map((p, i) => {
-              const isLast = i === rest.length - 1;
+            {sidebar.map((p, i) => {
+              const isLast = i === sidebar.length - 1;
               return (
                 <article
-                  key={p.title}
+                  key={p.slug}
                   ref={(el) => { sidebarRowRefs.current[i] = el; }}
-                  className="group flex cursor-pointer items-center gap-3 will-change-transform transition-colors duration-200 hover:bg-white/[0.03]"
+                  className="group will-change-transform"
                   style={{
-                    paddingTop: "22px",
-                    paddingBottom: "22px",
-                    paddingLeft: "10px",
-                    paddingRight: "10px",
-                    marginLeft: "-10px",
-                    marginRight: "-10px",
-                    borderBottom: isLast
-                      ? "none"
-                      : "1px solid rgba(255,255,255,0.06)",
+                    borderBottom: isLast ? "none" : "1px solid rgba(255,255,255,0.06)",
                   }}
                 >
-                  {/* Content */}
-                  <div className="min-w-0 flex-1">
-                    <span
-                      ref={(el) => { sidebarBadgeRefs.current[i] = el; }}
-                      className="will-change-transform"
-                      style={badgeStyle(p.category, true)}
-                    >
-                      {p.category}
+                  <Link
+                    href={`/insights/${p.slug}`}
+                    className="flex cursor-pointer items-center gap-3 transition-colors duration-200 hover:bg-white/[0.03]"
+                    style={{
+                      paddingTop: "22px",
+                      paddingBottom: "22px",
+                      paddingLeft: "10px",
+                      paddingRight: "10px",
+                      marginLeft: "-10px",
+                      marginRight: "-10px",
+                    }}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <span
+                        ref={(el) => { sidebarBadgeRefs.current[i] = el; }}
+                        className="will-change-transform"
+                        style={badgeStyle(p.category, true)}
+                      >
+                        {p.category}
+                      </span>
+
+                      <h3
+                        className="mt-2.5 font-bold text-white transition-colors duration-200 group-hover:text-[#2D5BFF]"
+                        style={{
+                          fontSize: "17px",
+                          lineHeight: 1.4,
+                          overflow: "hidden",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                        } as React.CSSProperties}
+                      >
+                        {p.title}
+                      </h3>
+
+                      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.15em] text-white/35">
+                        {p.readTime} · {p.date}
+                      </p>
+                    </div>
+
+                    <span className="ml-2 shrink-0 inline-block font-mono text-[18px] text-white/25 transition-all duration-200 group-hover:text-[#2D5BFF] group-hover:translate-x-1">
+                      →
                     </span>
-
-                    <h3
-                      className="mt-2.5 font-bold text-white transition-colors duration-200 group-hover:text-[#2D5BFF]"
-                      style={{
-                        fontSize: "17px",
-                        lineHeight: 1.4,
-                        overflow: "hidden",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                      } as React.CSSProperties}
-                    >
-                      {p.title}
-                    </h3>
-
-                    <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.15em] text-white/35">
-                      {p.readTime} min · {p.date}
-                    </p>
-                  </div>
-
-                  {/* Arrow */}
-                  <span className="ml-2 shrink-0 inline-block font-mono text-[18px] text-white/25 transition-all duration-200 group-hover:text-[#2D5BFF] group-hover:translate-x-1">
-                    →
-                  </span>
+                  </Link>
                 </article>
               );
             })}
           </div>
         </div>
 
-        {/* ── Horizontal scroll teaser ── */}
+        {/* Horizontal scroll teaser */}
         <div className="mt-20 md:mt-24">
-
-          {/* Section label row */}
           <div className="mb-5 flex items-center gap-6">
             <div
               className="h-px flex-1"
@@ -483,7 +440,6 @@ export default function Blogs() {
             </span>
           </div>
 
-          {/* Scroll container */}
           <div
             ref={hScrollRef}
             className="blogs-hscroll flex gap-4 overflow-x-auto pb-2 select-none"
@@ -493,18 +449,21 @@ export default function Blogs() {
             onMouseUp={stopDrag}
             onMouseLeave={stopDrag}
           >
-            {POSTS.map((p, i) => {
-              return (
-                <article
-                  key={p.title}
-                  ref={(el) => { hCardRefs.current[i] = el; }}
-                  className="cursor-pointer will-change-transform shrink-0 transition-colors duration-200 hover:bg-white/[0.04]"
-                  style={{
-                    width: "300px",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                    borderRadius: "4px",
-                    padding: "22px 20px",
-                  }}
+            {ARTICLES.map((p, i) => (
+              <article
+                key={p.slug}
+                ref={(el) => { hCardRefs.current[i] = el; }}
+                className="cursor-pointer will-change-transform shrink-0"
+                style={{
+                  width: "300px",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "4px",
+                }}
+              >
+                <Link
+                  href={`/insights/${p.slug}`}
+                  className="block transition-colors duration-200 hover:bg-white/[0.04]"
+                  style={{ padding: "22px 20px" }}
                 >
                   <span
                     ref={(el) => { hBadgeRefs.current[i] = el; }}
@@ -529,11 +488,11 @@ export default function Blogs() {
                   </h3>
 
                   <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.15em] text-white/35">
-                    {p.readTime} min · {p.date}
+                    {p.readTime} · {p.date}
                   </p>
-                </article>
-              );
-            })}
+                </Link>
+              </article>
+            ))}
           </div>
         </div>
 

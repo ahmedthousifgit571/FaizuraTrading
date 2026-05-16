@@ -3,8 +3,9 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useReducedMotion } from "framer-motion";
+import { contactFormSchema, type ContactFormValues } from "@/lib/contact-form";
+import { submitContactEnquiry } from "@/lib/submit-contact-enquiry";
 import type { LucideIcon } from "lucide-react";
 import {
   MessageCircle, Phone, Mail, Clock,
@@ -12,15 +13,12 @@ import {
 } from "lucide-react";
 import { useGSAP, gsap } from "@/hooks/useGSAP";
 
-/* ── Schema (unchanged) ── */
-const schema = z.object({
-  name: z.string().min(2, "Please enter your name"),
-  email: z.string().email("Please enter a valid email"),
-  phone: z.string().min(6, "Please enter a valid phone number"),
-  enquiryType: z.enum(["personal", "corporate", "remittance", "other"]),
-  message: z.string().min(10, "Tell us a little more (10+ characters)"),
-});
-type FormValues = z.infer<typeof schema>;
+const schema = contactFormSchema;
+type FormValues = ContactFormValues;
+
+/** Set NEXT_PUBLIC_CONTACT_FORM_LIVE=true in .env.local when Resend is ready. */
+const CONTACT_FORM_LIVE =
+  process.env.NEXT_PUBLIC_CONTACT_FORM_LIVE === "true";
 
 /* ── Contact info rows ── */
 type ContactRow = {
@@ -83,8 +81,8 @@ export default function Contact() {
 
   const reduce = useReducedMotion();
 
-  /* ── Form state & logic (unchanged) ── */
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -96,8 +94,19 @@ export default function Contact() {
   });
 
   async function onSubmit(values: FormValues) {
-    await new Promise((r) => setTimeout(r, 600));
-    console.log("Contact form submitted:", values);
+    setSubmitError(null);
+
+    if (CONTACT_FORM_LIVE) {
+      const result = await submitContactEnquiry(values);
+      if (!result.ok) {
+        setSubmitError(result.error);
+        return;
+      }
+    } else {
+      /* Dummy success until Resend + domain are configured (see .env.example). */
+      await new Promise((r) => setTimeout(r, 600));
+    }
+
     setSubmitted(true);
     reset();
   }
@@ -589,6 +598,14 @@ export default function Contact() {
 
                 {/* ── Submit ── */}
                 <div className="md:col-span-2 mt-1 flex flex-col gap-3 md:mt-0">
+                  {submitError && (
+                    <p
+                      className="rounded-sm border border-[#FF5C5C]/30 bg-[#FF5C5C]/10 px-4 py-3 text-[13px] leading-relaxed text-[#FF5C5C]"
+                      role="alert"
+                    >
+                      {submitError}
+                    </p>
+                  )}
                   <button
                     type="submit"
                     disabled={isSubmitting}

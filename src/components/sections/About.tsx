@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
 import { useGSAP, gsap } from "@/hooks/useGSAP";
+import Link from "next/link";
 
 const STATS = [
   { value: "50,000+", label: "Customers Served" },
@@ -32,6 +33,8 @@ export default function About() {
   /* per-stat refs */
   const statElRefs  = useRef<(HTMLElement | null)[]>([]);
   const statNumRefs = useRef<(HTMLElement | null)[]>([]);
+  const buttonRef   = useRef<HTMLAnchorElement>(null);
+  const arrowRef    = useRef<HTMLSpanElement>(null);
 
   const reduce = useReducedMotion();
 
@@ -101,6 +104,16 @@ export default function About() {
           opacity: 0,
           duration: 0.7,
           delay: 0.4,
+          ease: "power2.out",
+          scrollTrigger: { trigger: triggerEl, start: "top 85%", once: true },
+        });
+      }
+      if (buttonRef.current) {
+        gsap.from(buttonRef.current, {
+          y: 20,
+          opacity: 0,
+          duration: 0.6,
+          delay: 0.8,
           ease: "power2.out",
           scrollTrigger: { trigger: triggerEl, start: "top 85%", once: true },
         });
@@ -271,6 +284,38 @@ export default function About() {
                 <span className="text-white/90">PS00000000</span>
               </span>
             </div>
+
+            {/* Discover Our Story CTA */}
+            <Link
+              ref={buttonRef}
+              href="/about"
+              className="mt-8 inline-flex items-center gap-2.5 self-start will-change-transform active:scale-[0.98]"
+              style={{
+                padding: "14px 32px",
+                border: "1px solid #2D5BFF",
+                color: "#2D5BFF",
+                backgroundColor: "transparent",
+                fontWeight: 700,
+                fontSize: "11px",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                borderRadius: "3px",
+              }}
+              onMouseEnter={() => {
+                if (!buttonRef.current || !arrowRef.current) return;
+                gsap.to(buttonRef.current, { backgroundColor: "#2D5BFF", color: "#ffffff", duration: 0.22, ease: "power2.out" });
+                gsap.to(arrowRef.current, { x: 4, duration: 0.22, ease: "power2.out" });
+              }}
+              onMouseLeave={() => {
+                if (!buttonRef.current || !arrowRef.current) return;
+                gsap.to(buttonRef.current, { backgroundColor: "transparent", color: "#2D5BFF", duration: 0.22, ease: "power2.out" });
+                gsap.to(arrowRef.current, { x: 0, duration: 0.22, ease: "power2.out" });
+              }}
+            >
+              DISCOVER OUR STORY
+              <span ref={arrowRef} aria-hidden className="will-change-transform">→</span>
+            </Link>
           </div>
 
           {/* RIGHT — open stats grid (col-span-5 of 12 ≈ 45%) */}

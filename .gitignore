@@ -49,3 +49,4 @@ next-env.d.ts
 # markdown docs
 *.md
 !README.md
+.env.example

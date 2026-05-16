@@ -71,6 +71,10 @@ function nearestAvailable(cache: Cache, idx: number): HTMLImageElement | null {
   return null;
 }
 
+// Source-image fraction reserved for the bottom watermark. Kept in sync with
+// the `canvas-clip-watermark` mask in globals.css.
+const WATERMARK_CLIP = 0.06;
+
 function drawCover(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
@@ -79,6 +83,33 @@ function drawCover(
 ) {
   const imgRatio = img.naturalWidth / img.naturalHeight;
   const canvasRatio = canvasW / canvasH;
+
+  ctx.clearRect(0, 0, canvasW, canvasH);
+
+  // On portrait / very-narrow viewports (mobile), cover would scale the
+  // 16:9 frame to fill vertically and crop ~50% of its width, slicing the
+  // phones and hands off the sides. Fall back to contain so the whole
+  // cinematic composition stays in frame; the section's navy background
+  // covers the resulting letterbox bands seamlessly.
+  if (canvasRatio < imgRatio * 0.7) {
+    const sw = img.naturalWidth;
+    const sh = img.naturalHeight * (1 - WATERMARK_CLIP);
+    const sourceRatio = sw / sh;
+
+    let drawW: number, drawH: number;
+    if (sourceRatio > canvasRatio) {
+      drawW = canvasW;
+      drawH = drawW / sourceRatio;
+    } else {
+      drawH = canvasH;
+      drawW = drawH * sourceRatio;
+    }
+    const offsetX = (canvasW - drawW) / 2;
+    const offsetY = (canvasH - drawH) / 2;
+    ctx.drawImage(img, 0, 0, sw, sh, offsetX, offsetY, drawW, drawH);
+    return;
+  }
+
   let drawW: number, drawH: number, offsetX: number, offsetY: number;
   if (imgRatio > canvasRatio) {
     drawH = canvasH;
@@ -91,6 +122,5 @@ function drawCover(
     offsetX = 0;
     offsetY = (canvasH - drawH) / 2;
   }
-  ctx.clearRect(0, 0, canvasW, canvasH);
   ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
 }

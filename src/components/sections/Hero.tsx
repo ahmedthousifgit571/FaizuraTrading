@@ -94,6 +94,7 @@ export default function Hero() {
 
   return (
     <section
+      id="home"
       aria-label="Faizura Trading hero"
       className="relative isolate min-h-[100dvh] overflow-hidden bg-[#0a0a0b] text-primary"
     >

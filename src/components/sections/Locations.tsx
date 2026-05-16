@@ -5,9 +5,10 @@ import { useReducedMotion } from "framer-motion";
 import { MapPin, Clock, Phone, ArrowUpRight } from "lucide-react";
 import { useGSAP, gsap } from "@/hooks/useGSAP";
 
-const LAT = 1.3146629;
-const LNG = 103.7645832;
-const MAPS_LINK = `https://maps.google.com/?q=${LAT},${LNG}`;
+const LAT = 1.3147408;
+const LNG = 103.7647079;
+const MAPS_LINK =
+  "https://www.google.com/maps/search/Faizura+Trading+Clementi+Money+Changer/@1.3147408,103.7647079,17z";
 const EMBED_SRC = `https://maps.google.com/maps?q=${LAT},${LNG}&z=17&output=embed`;
 
 function getOpenStatus(): boolean {
@@ -294,7 +295,7 @@ export default function Locations() {
                 />
               </a>
               <span className="font-mono text-[10px] text-white/20 tabular-nums">
-                1.3146629, 103.7645832
+                1.3147408, 103.7647079
               </span>
             </div>
           </div>
