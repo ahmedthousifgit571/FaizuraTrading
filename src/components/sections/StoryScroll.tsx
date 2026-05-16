@@ -149,7 +149,7 @@ export default function StoryScroll() {
                 variants={fadeUp}
                 className="mt-7 font-mono text-[11px] uppercase tracking-[0.26em] text-white/65 will-change-transform"
               >
-                47 currencies · Zero hidden fees · Singapore's most trusted since 2008
+                47 currencies · Zero hidden fees · Singapore&apos;s most trusted since 2008
               </motion.p>
 
             </motion.div>

@@ -159,7 +159,7 @@ export default function Hero() {
                 href="#converter"
                 className="group relative inline-flex items-center gap-3 rounded-full bg-white pl-6 pr-2 py-2 text-[15px] font-semibold text-[#0a0a0b] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:pr-3 active:scale-[0.98]"
               >
-                Lock today's rate
+                Lock today&apos;s rate
                 <span className="grid h-10 w-10 place-items-center rounded-full bg-[#0a0a0b] text-white transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-[3px] group-hover:-translate-y-[1px]">
                   <ArrowUpRight size={16} strokeWidth={1.75} />
                 </span>

@@ -117,7 +117,7 @@ export default function Blogs() {
   const rest     = POSTS.filter((p) => !p.featured);
 
   useGSAP(
-    (_ctx) => {
+    () => {
       if (reduce) return;
 
       if (eyebrowRef.current) {

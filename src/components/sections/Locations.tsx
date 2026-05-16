@@ -37,7 +37,7 @@ export default function Locations() {
 
   /* ── GSAP scroll animations ── */
   useGSAP(
-    (_ctx) => {
+    () => {
       if (reduce) return;
 
       if (eyebrowRef.current) {

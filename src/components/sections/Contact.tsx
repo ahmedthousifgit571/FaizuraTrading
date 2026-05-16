@@ -104,7 +104,7 @@ export default function Contact() {
 
   /* ── GSAP scroll animations ── */
   useGSAP(
-    (_ctx) => {
+    () => {
       if (reduce) return;
 
       if (eyebrowRef.current) {

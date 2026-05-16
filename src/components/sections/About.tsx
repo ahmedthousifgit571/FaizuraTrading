@@ -36,7 +36,7 @@ export default function About() {
   const reduce = useReducedMotion();
 
   useGSAP(
-    (_ctx) => {
+    () => {
       if (reduce) return;
 
       /* ── Zone 1 headline: line-by-line entrance ── */

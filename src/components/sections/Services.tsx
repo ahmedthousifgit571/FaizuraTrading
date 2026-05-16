@@ -21,7 +21,7 @@ export default function Services() {
   const reduce      = useReducedMotion();
 
   useGSAP(
-    (_ctx) => {
+    () => {
       if (reduce) return;
 
       /* ── header entrance ── */
